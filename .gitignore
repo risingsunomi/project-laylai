@@ -53,3 +53,6 @@ dkms.conf
 
 # compiled
 bin/
+
+# logs
+chat_log.txt
