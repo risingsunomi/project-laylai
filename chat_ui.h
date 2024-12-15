@@ -7,12 +7,15 @@
 
 #define MAX_INPUT 200
 #define MAX_MESSAGE_DISPLAY 10
+#define MAX_USERNAME_LEN 50
 
 typedef struct MessageNode {
   char message[MAX_INPUT];
   struct MessageNode *next;
 } MessageNode;
 
+// -- NOTE [12/15/2024]
+// should change from linked list, can just be 2d char array
 typedef struct User {
   char username[50];
   struct User *next;

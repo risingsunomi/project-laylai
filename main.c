@@ -23,14 +23,15 @@ int main() {
   WINDOW *user_win = newwin(chat_height, user_width, 0, chat_width);
   WINDOW *input_win = newwin(input_height, width, chat_height, 0);
 
-  // Data structures
+  // setup messages
   MessageNode *messages = NULL;
   MessageNode *tail = NULL;
   int message_count = 0;
   int offset = 0;
 
+  // setup self as user
   User *users = NULL;
-  char *user_name = "User1";
+  char user_name[MAX_USERNAME_LEN] = "User1";
   add_user(user_name, &users);
 
   char input_buffer[MAX_INPUT] = {0};
@@ -75,8 +76,12 @@ int main() {
       if (offset > 0) offset--;
     } else if (strcmp(input_buffer, "/down") == 0) {
       if (offset < message_count - max_displayable) offset++;
-    } else if (strcmp(input_buffer, "/nick") == 0) {
-      printf("nick cmd used %s", input_buffer);
+    } else if (strstr(input_buffer, "/nick ") != NULL) {
+      int nn_len = strlen(input_buffer) - 6;
+      if(nn_len > 0) {
+        // copy new username to user_name from input_buffer without /nick+space command
+        strncpy(user_name, input_buffer+6, MAX_USERNAME_LEN);
+      }
     } else {
       // Add timestamp and username to the message
       char timestamp[20];
@@ -89,11 +94,9 @@ int main() {
 
       // Safely format the message
       char formatted_message[MAX_INPUT];
-      snprintf(formatted_message, sizeof(formatted_message), "[%s] | User1 | %s", timestamp, truncated_input);
+      snprintf(formatted_message, sizeof(formatted_message), "[%s] | %s | %s", timestamp, user_name, truncated_input);
 
       add_message(formatted_message, &messages, &tail, &message_count);
-
-      printf("saving to log");
       write_message_to_log(formatted_message);
 
       if(message_count > MAX_MESSAGE_DISPLAY) {
